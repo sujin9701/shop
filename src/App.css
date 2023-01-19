@@ -1,3 +1,28 @@
+.start {
+  opacity: 0;
+
+}
+
+.end {
+  opacity: 1;
+  transition: opacity 0.5s;
+}
+
+.main-bg {
+  height: 300px;
+  background-image: url("./img/bg.png");
+  background-size: cover;
+  background-position: center;
+}
+
+/* Link 버튼 꾸몄었는데.. 필요없어짐 */
+.link-button {
+  text-decoration: none;
+  color: rgb(67, 67, 67);
+  margin: 5px;
+  padding: 5px;
+}
+
 .App {
   text-align: center;
 }
