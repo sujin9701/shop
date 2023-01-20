@@ -8,11 +8,19 @@ import { Detail } from "./routes/Detail.js";
 import { Routes, Route, Link, useNavigate, Outlet } from 'react-router-dom'
 import axios from 'axios'
 import Cart from "./routes/Cart.js"
+import { useQuery } from "@tanstack/react-query"
 
 function App() {
 
   let [shoes, setShoes] = useState(shoesData);
   let navigate = useNavigate();
+
+  let result = useQuery('작명', () => {
+    return axios.get('https://codingapple1.github.io/userdata.json').then((a) => {
+      return a.data;
+    }),
+    { staleTime : 2000 }
+  })
 
   return (
     <div className="App">
@@ -26,12 +34,17 @@ function App() {
             <Nav.Link onClick={() => { navigate("/detail") }}>Detail</Nav.Link>
             <Nav.Link onClick={() => { navigate("/about") }}>About</Nav.Link>
           </Nav>
+          <Nav className="ms-auto">
+            { result.isLoading && "로딩중" }
+            { result.error && "에러남" }
+            { result.data && result.data.name }
+          </Nav>
         </Container>
       </Navbar>
 
       <Routes>
         <Route path="/" element={ <Home shoes={shoes} setShoes={setShoes}/> }/>
-        <Route path="/detail/:id" element={ <Detail shoes={shoes} /> }/>
+        <Route path="/detail/:id" element={ <Detail /> }/>
         <Route path="/cart" element={ <Cart/> }/>
       </Routes>
 
@@ -46,7 +59,7 @@ function Home(props) {
       <div className="container">
         <div className="row">
           { props.shoes.map((shoesData, i) => {
-              return ( <Card imgSrc={"https://codingapple1.github.io/shop/shoes" + (i + 1) + ".jpg"} shoesData={shoesData}/> )
+              return ( <Card imgSrc={"https://codingapple1.github.io/shop/shoes" + (i + 1) + ".jpg"} shoesData={shoesData} i={i} key={i}/> )
             }) }
         </div>
       </div>
@@ -79,10 +92,13 @@ function About() {
 }
 
 function Card(props) {
+
+  let navigate = useNavigate();
+
   return (
     <>
       <div className="col-md-4">
-        <img src={props.imgSrc} width="80%"/>
+        <img src={props.imgSrc} width="80%" onClick={() => { navigate( `/detail/${props.i}`) }}/>
         <h4>{ props.shoesData.title }</h4>
         <p>{ props.shoesData.price }</p>
       </div>

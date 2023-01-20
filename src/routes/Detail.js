@@ -3,9 +3,14 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { Nav } from 'react-bootstrap'
+import { useSelector, useDispatch } from "react-redux"
+import { addCart } from "./../store.js"
 import "../App.css"
 
-function Detail(props) {
+function Detail() {
+
+    let state = useSelector((state) => state )
+    let dispatch = useDispatch()
 
     useEffect(() => {
         setFadePage("end");
@@ -18,8 +23,15 @@ function Detail(props) {
         });
     })
 
+    useEffect(() => {
+        if (localStorage.getItem("watched") == null) localStorage.setItem("watched", JSON.stringify([]));
+        let watchedItem = JSON.parse(localStorage.getItem("watched"));
+        if (watchedItem.find((x) => x == parseInt(id)) == undefined) watchedItem.push(parseInt(id));
+        localStorage.setItem("watched", JSON.stringify(watchedItem));
+    }, [])
+
     let {id} = useParams();
-    let shoesElement = props.shoes.find((data) => data.id == id );
+    let shoesElement = state.shoesData.find((data) => data.id == id );
     let [isShow, setIsShow] = useState(true);
     let [count, setCount] = useState(0);
     let [inputText, setInputText] = useState('');
@@ -41,7 +53,9 @@ function Detail(props) {
                 <h4 className="pt-5">{shoesElement.title}</h4>
                 <p>{shoesElement.content}</p>
                 <p>{shoesElement.price}원</p>
-                <button className="btn btn-danger">주문하기</button> 
+                <button className="btn btn-danger" onClick={()=>{
+                    dispatch(addCart(shoesElement));
+                }}>주문하기</button> 
                 </div>
             </div>
 
